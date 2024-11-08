@@ -1,114 +1,354 @@
-import pandas as pd
 import streamlit as st
-import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.ensemble import GradientBoostingClassifier
+import pandas as pd
+import pickle
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+import bcrypt
+import os
+from sklearn.base import BaseEstimator
 
-# Load the cleaned dataset
-df_copy = pd.read_csv('cleaned_domestic_violence.csv')
 
-# Load your encoded dataset (make sure to keep the feature names)
-df_encoded = pd.get_dummies(df_copy, columns=['education', 'employment', 'marital_status', 'violence'], drop_first=True)
+# File to store user data
+USER_DATA_FILE = 'user_data.pkl'
 
-# Get the list of feature names from the encoded DataFrame (excluding the target variable)
-feature_names = df_encoded.columns.tolist()
-feature_names.remove('violence_yes')  # Remove the target variable
+# Load pre-trained models
+with open('Random Forest_model.pkl', 'rb') as rf_model_file:
+    random_forest = pickle.load(rf_model_file)
+with open('XGBoost_model.pkl', 'rb') as xgb_model_file:
+    xgboost = pickle.load(xgb_model_file)
+with open('Gradient Boosting_model.pkl', 'rb') as gb_model_file:
+    gradient_boosting = pickle.load(gb_model_file)
 
-# Split data into features and target
-X = df_encoded[feature_names]
-y = df_encoded['violence_yes']
+# Model selection dictionary
+models = {
+    "Random Forest": random_forest,
+    "XGBoost": xgboost,
+    "Gradient Boosting": gradient_boosting
+}
 
-# Split into train and test datasets (if needed)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Load or initialize user data
+if os.path.exists(USER_DATA_FILE):
+    with open(USER_DATA_FILE, 'rb') as f:
+        user_data = pickle.load(f)
+else:
+    user_data = {}
 
-# Create a pipeline with an imputer and the gradient boosting classifier
-gradient_boosting_pipeline = Pipeline([
-    ('imputer', SimpleImputer(strategy='mean')),
-    ('model', GradientBoostingClassifier())
-])
+def save_user_data():
+    with open(USER_DATA_FILE, 'wb') as f:
+        pickle.dump(user_data, f)
 
-# Fit the pipeline with the training data
-gradient_boosting_pipeline.fit(X_train, y_train)
+# Password hashing functions
+def hash_password(password):
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
-# Save the fitted pipeline (optional, if you want to avoid retraining each time)
-joblib.dump(gradient_boosting_pipeline, 'gradient_boosting_pipeline.pkl')
+def check_password(password, hashed):
+    return bcrypt.checkpw(password.encode(), hashed)
 
-def encode_user_input(user_data):
-    # Create a DataFrame for user input with all columns initialized to 0
-    user_data_encoded = pd.DataFrame(columns=feature_names)
+# Registration function
+def register_user(email, password):
+    if email in user_data:
+        return "Email already registered. Please log in."
+    user_data[email] = hash_password(password)
+    save_user_data()
+    return "Registration successful! Please log in."
 
-    # Add numeric user data
-    user_data_encoded.loc[0, 'age'] = int(user_data['age'])  # Ensure age is int
-    user_data_encoded.loc[0, 'income'] = float(user_data['income'])  # Ensure income is float
+# Login function
+def login_user(email, password):
+    if email in user_data and check_password(password, user_data[email]):
+        st.session_state["authenticated"] = True
+        st.session_state["user_email"] = email
+        return "Login successful!"
+    return "Invalid email or password."
 
-    # One-hot encode the categorical features from user input
-    education_dummies = pd.get_dummies([user_data['education']], prefix='education', drop_first=True)
-    employment_dummies = pd.get_dummies([user_data['employment']], prefix='employment', drop_first=True)
-    marital_status_dummies = pd.get_dummies([user_data['marital_status']], prefix='marital_status', drop_first=True)
+# Logout function
+def logout_user():
+    st.session_state["authenticated"] = False
+    st.session_state["user_email"] = None
 
-    # Concatenate the dummies to the user_data_encoded DataFrame
-    user_data_encoded = pd.concat([user_data_encoded, education_dummies, employment_dummies, marital_status_dummies], axis=1)
+# Check authentication state
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
 
-    # Reindex to ensure all columns are present and fill missing ones with 0
-    user_data_encoded = user_data_encoded.reindex(columns=feature_names, fill_value=0)
-
-    # Convert columns to correct data types (int for binary features)
-    user_data_encoded = user_data_encoded.astype(float)  # Ensure all features are float for XGBoost compatibility
-
-    return user_data_encoded
-
-def recommend_resources(probability):
-    if probability >= 0.8:
-        st.write("### **Recommendation:**")
-        st.write("Given the high likelihood of domestic violence, we recommend the following resources:")
-        st.write("- National Domestic Violence Hotline: 1-800-799-7233")
-        st.write("- Local women’s shelters and support centers.")
-        st.write("- Consider contacting a social worker or legal advisor for assistance.")
-    elif probability >= 0.5:
-        st.write("### **Recommendation:**")
-        st.write("There is a moderate risk of domestic violence. Consider talking to a counselor or seeking advice from a local women’s organization.")
-    else:
-        st.write("### **Recommendation:**")
-        st.write("The risk is low, but it's important to stay informed. Keep track of any potential warning signs.")
-
-def main():
-    st.title("AI-Powered Solution for Domestic Violence Prevention")
-    st.subheader("Predicting the likelihood of domestic violence based on socio-economic factors.")
-
-    age = st.number_input('Age', min_value=18, max_value=100, value=30)
-    education = st.selectbox('Education Level', ('Primary', 'Secondary', 'Tertiary'))
-    marital_status = st.selectbox('Marital Status', ('Single', 'Married', 'Divorced'))
-    employment = st.selectbox('Employment Status', ('Employed', 'Unemployed', 'Semi-employed'))
-    income = st.number_input('Income', min_value=0, max_value=100000, value=20000)
-
-    user_data = {
-        'age': age,
-        'education': education,
-        'marital_status': marital_status,
-        'employment': employment,
-        'income': income,
+# Apply CSS to set the background image
+st.markdown("""
+    <style>
+    /* Set the background image on the main app container */
+    .stApp {
+        background-image: url("https://slamatlaw.co.za/wp-content/uploads/2021/03/domestic-violence.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
     }
 
-    user_data_encoded = encode_user_input(user_data)
+    /* Overlay for readability */
+    .main {
+        background-color: rgba(51, 51, 51, 0.8); /* Dark overlay */
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        color: #FFFFFF;
+    }
 
-    model_choice = st.sidebar.selectbox('Model', ('Random Forest', 'XGBoost', 'Gradient Boosting'))
+    /* Set font colors */
+    h1, h2, h3, h4, h5, h6 { color: #FF66B2; font-family: Arial, sans-serif; }
+    label { color: #FFFFFF !important; }
 
-    if model_choice == 'Random Forest':
-        random_forest = joblib.load('random_forest_model.pkl')
-        prediction_proba = random_forest.predict_proba(user_data_encoded)[:, 1]
-    elif model_choice == 'XGBoost':
-        xgboost_model = joblib.load('xgboost_model.pkl')
-        prediction_proba = xgboost_model.predict_proba(user_data_encoded)[:, 1]
-    elif model_choice == 'Gradient Boosting':
-        gradient_boosting_pipeline = joblib.load('gradient_boosting_pipeline.pkl')  # Load the fitted pipeline
-        prediction_proba = gradient_boosting_pipeline.predict_proba(user_data_encoded)[:, 1]
+    /* Button styling */
+    .stButton button {
+        background-color: #FF66B2;
+        color: white;
+        border: None;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+    .stButton button:hover {
+        background-color: #D147A3;
+        color: white;
+    }
 
-    st.write(f"The model predicts a **{prediction_proba[0]*100:.2f}%** likelihood of domestic violence.")
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background-color: #FF66B2;
+        color: #333333;
+    }
+    section[data-testid="stSidebar"] h1, 
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3, 
+    section[data-testid="stSidebar"] h4, 
+    section[data-testid="stSidebar"] h5, 
+    section[data-testid="stSidebar"] h6 {
+        color: #FFFFFF !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-    # Call the recommend_resources function based on prediction probability
-    recommend_resources(prediction_proba[0])
+# Sidebar for navigation and authentication
+st.sidebar.title("Navigation")
+page = st.sidebar.selectbox(
+    "Go to",
+    ["Overview", "Dataset Description", "EDA", "Model Prediction", "Model Evaluation", "Team", "Contact"]
+)
 
-if __name__ == '__main__':
-    main()
+# Login and Registration in Sidebar
+if not st.session_state["authenticated"]:
+    st.sidebar.subheader("Register or Sign In")
+    
+    with st.sidebar.expander("Register"):
+        email = st.text_input("Email", key="register_email")
+        password = st.text_input("Password", type="password", key="register_password")
+        if st.button("Register", key="register_button"):
+            reg_msg = register_user(email, password)
+            if "successful" in reg_msg:
+                st.sidebar.success(reg_msg)
+            else:
+                st.sidebar.error(reg_msg)
+
+    with st.sidebar.expander("Sign In"):
+        email = st.text_input("Email", key="login_email")
+        password = st.text_input("Password", type="password", key="login_password")
+        if st.button("Sign In", key="login_button"):
+            login_msg = login_user(email, password)
+            if "successful" in login_msg:
+                st.experimental_rerun()
+            else:
+                st.sidebar.error(login_msg)
+else:
+    st.sidebar.write(f"Welcome, {st.session_state['user_email']}!")
+    if st.sidebar.button("Logout"):
+        logout_user()
+        st.experimental_rerun()
+
+# Content based on sidebar selection
+if page == "Overview":
+    st.title("Domestic Violence Risk Prediction and Recommendation App")
+    st.write("""
+        Welcome to the Domestic Violence Risk Prediction and Recommendation App. This tool leverages socio-economic data 
+        to assess an individual’s risk of experiencing domestic violence. By analyzing factors such as age, income, 
+        education level, employment status, and marital status, the app can provide insights into potential risk levels.
+
+        
+        ### How to Use the App:
+        Use the sidebar to explore various sections:
+        - **Dataset Description**: Information about the data and variables used in the analysis.
+        - **Exploratory Data Analysis (EDA)**: Visualizations to help understand data patterns.
+        - **Model Prediction**: Enter data to predict an individual's risk level.
+        - **Model Evaluation**: View metrics on model performance.
+        - **Team & Contact**: Learn more about the project team and how to get in touch.
+
+        This app aims to assist individuals, healthcare providers, and community organizations in identifying and addressing 
+        domestic violence risk factors more effectively.
+    """)
+
+
+    st.write("Use the sidebar to explore different sections of the app.")
+
+elif page == "Dataset Description":
+    st.title("Dataset Description")
+
+    st.write("""
+        This dataset supports AI models to predict domestic violence risk factors and inform prevention strategies. It was collected 
+        through surveys in rural communities, focusing on socio-economic and demographic information aligned with global efforts 
+        to address gender equity challenges.
+    """)
+
+    st.subheader("Data Overview")
+    st.write("""
+        - **Size**: 347 records
+        - **Scope**: Socio-economic and demographic factors for women, primarily from developing regions.
+        - **Types**: Both numerical (e.g., age, income) and categorical (e.g., education, employment) data.
+    """)
+
+    st.subheader("Columns")
+    st.write("""
+        - **SL. No**: Unique record ID
+        - **Age**: Respondent’s age (numerical)
+        - **Education**: Education level (categorical)
+        - **Employment**: Employment status (categorical)
+        - **Income**: Monthly income (numerical)
+        - **Marital Status**: Marital status (categorical)
+        - **Violence**: Experience of domestic violence (Yes/No)
+    """)
+
+    st.subheader("Purpose")
+    st.write("""
+        The data helps identify risk patterns and guide recommendations for support resources to reduce domestic violence.
+    """)
+
+elif page == "EDA":
+    st.title("Exploratory Data Analysis (EDA)")
+    st.write("""
+        This section provides visual insights into key patterns and relationships within the dataset. These visualizations 
+        help identify significant factors associated with domestic violence risk, informing model development and targeted interventions.
+    """)
+
+    # Display EDA charts with descriptions
+    st.subheader("Key Insights from Data")
+    st.write("Below are some visualizations that highlight important distributions and relationships within the dataset:")
+
+    # Insert EDA1 image (e.g., distribution of age or income)
+    st.image("EDA3.png", caption="Distribution of Age Groups or Income Levels")
+
+    # Insert EDA2 image (e.g., correlation between socio-economic factors and domestic violence)
+    st.image("EDA1.png", caption="Correlation Between Socio-Economic Factors and Domestic Violence Risk")
+
+    # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
+    st.image("EDA2.png", caption="Impact of Marital Status on Domestic Violence Risk")
+
+    # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
+    st.image("EDA4.png", caption="Impact of Marital Status on Domestic Violence Risk")
+
+    # Additional EDA Insights (if applicable)
+    st.write("""
+        - **Age and Risk**: Certain age groups exhibit a higher risk profile.
+        - **Income and Risk**: Higher income levels tend to correlate with a reduced risk.
+        - **Employment Status and Risk**: Employment status shows a noticeable impact on risk levels.
+        - **Marital Status and Risk**: Individuals in certain marital statuses demonstrate different risk levels for domestic violence.
+    """)
+
+    st.write("These insights aid in identifying priority risk factors and guiding model development for more effective recommendations.")
+
+
+
+elif page == "Model Prediction":
+    if st.session_state["authenticated"]:
+        st.title("Predict Domestic Violence Risk")
+        st.write("Enter socio-economic factors to predict the risk of experiencing domestic violence.")
+        
+        # Model selection
+        st.subheader("Select a Model for Prediction")
+        model_choice = st.selectbox("Choose a model", list(models.keys()))
+        selected_model = models[model_choice]
+
+        # User input collection
+        st.subheader("Enter Socio-Economic Factors for Prediction")
+        age = st.slider("Age", 15, 100, step=1)
+        income_level = st.slider("Income Level", 0, 10000, step=500)
+        education = st.selectbox("Education Level", ["Primary", "Secondary", "Tertiary"])
+        employment_status = st.selectbox("Employment Status", ["Employed", "Semi-employed", "Unemployed"])
+        marital_status = st.selectbox("Marital Status", ["Married", "Unmarried"])
+
+        # Prepare the user input as a DataFrame
+        user_data = pd.DataFrame([[age, income_level, education, employment_status, marital_status]], 
+                             columns=["age", "income", "education", "employment", "marital_status"])
+
+        # One-hot encode the user data to match the training data format
+        user_data_encoded = pd.get_dummies(user_data, columns=['education', 'employment', 'marital_status'], drop_first=True)
+        # Ensure all required columns are present
+        required_columns = ['age', 'income', 'education_primary', 'education_secondary', 'education_tertiary',
+                            'employment_employed', 'employment_semi employed', 'employment_unemployed',
+                            'marital_status_unmarried']
+        for col in required_columns:
+            if col not in user_data_encoded:
+                user_data_encoded[col] = False  # Default to False for missing one-hot encoded columns
+
+        # Reorder columns to match training data
+        user_data_encoded = user_data_encoded[required_columns]
+
+        # Prediction and Recommendations
+        if st.button("Predict 💬"):
+           # Get prediction probabilities instead of just class labels
+           prediction_proba = selected_model.predict_proba(user_data_encoded)
+
+           # Apply 0.5 threshold to decide "at risk" (1) or "not at risk" (0)
+           if prediction_proba[0][1] >= 0.3:  # Probability of class 1 (at risk)
+             st.write("🚨 The model predicts that this individual is at risk of experiencing domestic violence.")
+             st.write("**Recommendations:**")
+             st.write("- 💼 Access to economic support programs.")
+             st.write("- 💍 Marriage or relationship counseling resources.")
+             st.write("- 🤝 Community support groups and legal assistance.")
+           else:
+             st.write("✅ The model predicts that this individual is not at high risk of experiencing domestic violence.")
+
+    else:
+        st.error("Please log in to access the prediction feature.")
+
+elif page == "Model Evaluation":
+    st.title("Model Evaluation")
+    st.write("""
+        This section presents the performance metrics of each model used in predicting domestic violence risk. 
+        Metrics such as accuracy, precision, recall, and F1-score provide insights into each model's effectiveness.
+    """)
+
+    # Display model evaluation metrics (add text or tables with evaluation metrics if available)
+    st.subheader("Performance Metrics")
+    st.write("""
+        - **Random Forest**: Accuracy: X%, Precision: Y%, Recall: Z%
+        - **XGBoost**: Accuracy: A%, Precision: B%, Recall: C%
+        - **Gradient Boosting**: Accuracy: D%, Precision: E%, Recall: F%
+    """)
+
+    # Insert EDA5 image for model evaluation (e.g., confusion matrix or ROC curve)
+    st.image("EDA5.png", caption="Model Evaluation - Confusion Matrix or ROC Curve")
+
+    # Additional explanation (if applicable)
+    st.write("""
+        - **Model Comparison**: Highlights the performance strengths and limitations of each model, aiding in selecting the best model for risk prediction.
+    """)
+
+    st.write("Model Evaluation helps us understand each model's predictive capability and guide improvements for future iterations.")
+
+
+elif page == "Team":
+    st.title("Meet the Team")
+    
+    st.subheader("Nozipho Sithembiso Ndebele")
+    st.write("""
+        **Role**: Data Scientist   
+        **Contributions**: Nozipho designed, developed, and implemented the Domestic Violence Risk Prediction 
+        and Recommendation App. Her responsibilities included data analysis, model development, and building the 
+        application interface. Nozipho’s commitment to addressing social issues through data-driven solutions 
+        motivated her to create this app, which aims to identify and mitigate factors contributing to domestic violence risk.
+    """)
+    
+    st.write("This app is a solo project by Nozipho Sithembiso Ndebele, driven by a commitment to support gender equity initiatives.")
+
+elif page == "Contact":
+    st.title("Get in Touch")
+    st.write("Feel free to reach out to us with any questions or feedback.")
+    st.text_input("Your Name")
+    st.text_input("Your Email")
+    st.text_area("Message")
+    if st.button("Send Message"):
+        st.success("Thank you for reaching out! We'll get back to you soon.")

@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/nozih/Downloads/Heckathon/Women_and_girl-s_safety/mlruns/0/34fc9ef661c648e58c056735e41c7938/artifacts
+end_time: 1731099480351
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 34fc9ef661c648e58c056735e41c7938
+run_name: Random Forest
+run_uuid: 34fc9ef661c648e58c056735e41c7938
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731099472205
+status: 3
+tags: []
+user_id: nozih

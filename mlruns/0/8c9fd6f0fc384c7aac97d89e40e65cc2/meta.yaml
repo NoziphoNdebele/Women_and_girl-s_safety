@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/nozih/Downloads/Heckathon/Women_and_girl-s_safety/mlruns/0/8c9fd6f0fc384c7aac97d89e40e65cc2/artifacts
+end_time: 1731096523703
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 8c9fd6f0fc384c7aac97d89e40e65cc2
+run_name: XGBoost
+run_uuid: 8c9fd6f0fc384c7aac97d89e40e65cc2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731096518364
+status: 3
+tags: []
+user_id: nozih

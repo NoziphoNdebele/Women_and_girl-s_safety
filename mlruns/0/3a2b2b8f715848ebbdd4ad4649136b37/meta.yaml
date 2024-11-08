@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/nozih/Downloads/Heckathon/Women_and_girl-s_safety/mlruns/0/3a2b2b8f715848ebbdd4ad4649136b37/artifacts
+end_time: 1731094590116
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3a2b2b8f715848ebbdd4ad4649136b37
+run_name: Gradient Boosting
+run_uuid: 3a2b2b8f715848ebbdd4ad4649136b37
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731094583832
+status: 3
+tags: []
+user_id: nozih

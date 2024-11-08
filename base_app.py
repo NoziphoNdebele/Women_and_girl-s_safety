@@ -1,12 +1,8 @@
 import streamlit as st
 import pandas as pd
 import pickle
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
 import bcrypt
 import os
-from sklearn.base import BaseEstimator
 
 
 # File to store user data

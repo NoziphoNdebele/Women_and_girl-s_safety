@@ -9,11 +9,11 @@ import os
 USER_DATA_FILE = "user_data.pkl"
 
 # Load pre-trained models
-with open("Random Forest_model.pkl", "rb") as rf_model_file:
+with open("models\Random Forest_model.pkl", "rb") as rf_model_file:
     random_forest = pickle.load(rf_model_file)
-with open("XGBoost_model.pkl", "rb") as xgb_model_file:
+with open("models\XGBoost_model.pkl", "rb") as xgb_model_file:
     xgboost = pickle.load(xgb_model_file)
-with open("Gradient Boosting_model.pkl", "rb") as gb_model_file:
+with open("models\Gradient Boosting_model.pkl", "rb") as gb_model_file:
     gradient_boosting = pickle.load(gb_model_file)
 
 # Model selection dictionary
@@ -128,7 +128,7 @@ if not st.session_state["authenticated"]:
 else:
     # Logged-in user display and logout option
     st.sidebar.write(f"Welcome, {st.session_state['user_email']}!")
-    
+
 st.markdown(
     """
     <style>
@@ -222,7 +222,7 @@ elif page == "Dataset Description":
         """
         - **Size**: 347 records
         - **Scope**: Socio-economic and demographic factors for women, primarily from developing regions.
-        - **Types**: Both numerical (e.g., age, income) and categorical (e.g., education, employment) data.
+        - **Types**: Both numerical and categorical variables.
     """
     )
 
@@ -262,19 +262,23 @@ elif page == "EDA":
     )
 
     # Insert EDA1 image (e.g., distribution of age or income)
-    st.image("EDA3.png", caption="Distribution of Age Groups or Income Levels")
+    st.image("Images\EDA3.png", caption="Distribution of Age Groups or Income Levels")
 
     # Insert EDA2 image (e.g., correlation between socio-economic factors and domestic violence)
     st.image(
-        "EDA1.png",
+        "Images\EDA1.png",
         caption="Correlation Between Socio-Economic Factors and Domestic Violence Risk",
     )
 
     # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
-    st.image("EDA2.png", caption="Impact of Marital Status on Domestic Violence Risk")
+    st.image(
+        "Images\EDA2.png", caption="Impact of Marital Status on Domestic Violence Risk"
+    )
 
     # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
-    st.image("EDA4.png", caption="Impact of Marital Status on Domestic Violence Risk")
+    st.image(
+        "Images\EDA4.png", caption="Impact of Marital Status on Domestic Violence Risk"
+    )
 
     # Additional EDA Insights (if applicable)
     st.write(
@@ -374,8 +378,7 @@ elif page == "Model Evaluation":
     st.title("Model Evaluation")
     st.write(
         """
-        This section presents the performance metrics of each model used in predicting domestic violence risk. 
-        Metrics such as accuracy, precision, recall, and F1-score provide insights into each model's effectiveness.
+        This section presents the accuracy metrics for each model in predicting domestic violence risk after hyperparameter tuning. Accuracy provides a clear measure of each model's overall effectiveness.
     """
     )
 
@@ -383,14 +386,16 @@ elif page == "Model Evaluation":
     st.subheader("Performance Metrics")
     st.write(
         """
-        - **Random Forest**: Accuracy: X%, Precision: Y%, Recall: Z%
-        - **XGBoost**: Accuracy: A%, Precision: B%, Recall: C%
-        - **Gradient Boosting**: Accuracy: D%, Precision: E%, Recall: F%
+        - **Random Forest**: Accuracy: 76%
+        - **XGBoost**: Accuracy: 73%
+        - **Gradient Boosting**: Accuracy: 72%
     """
     )
 
     # Insert EDA5 image for model evaluation (e.g., confusion matrix or ROC curve)
-    st.image("EDA5.png", caption="Model Evaluation - Confusion Matrix or ROC Curve")
+    st.image(
+        "Images\EDA5.png", caption="Model Evaluation - Confusion Matrix or ROC Curve"
+    )
 
     # Additional explanation (if applicable)
     st.write(

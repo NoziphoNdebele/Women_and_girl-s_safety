@@ -1,0 +1,13 @@
+AI-Driven Solution for Gender Equity: Preventing Domestic Violence Against Women and Girl’s
+
+Project Overview:
+
+This AI-powered solution addresses the critical issue of domestic violence against women in rural communities, directly aligned with the UN Sustainable Development Goal 5 on Gender Equality. Using machine learning techniques, the solution analyzes socio-economic factors such as age, income, employment status, and education level to predict and identify women at risk of domestic violence. The solution is embedded in an interactive Streamlit app, enabling real-time, data-driven decision-making by NGOs, policymakers, and community leaders.
+
+Contribution to Gender Equality:
+
+This project contributes to gender equality by tackling one of its most pressing challenges: violence against women and girls. The AI model helps identify risk factors for domestic violence, enabling early intervention and targeted resource allocation. By empowering organizations with actionable insights, this solution enables them to proactively protect women and girls, improve safety, and reduce violence. The app also provides visualizations that assist decision-makers in understanding patterns and making informed, timely interventions.
+
+Why it Matters:
+
+Domestic violence remains a pervasive issue, particularly in rural areas where access to resources and support is often limited. This tool empowers communities to address these gaps by equipping them with the ability to predict and mitigate domestic violence before it escalates, contributing to greater safety and well-being for women and girls.

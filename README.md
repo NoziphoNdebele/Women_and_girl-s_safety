@@ -45,19 +45,31 @@ The dataset consists of socio-economic information sourced from the National Inc
 ## 3. Packages <a class="anchor" id="packages"></a>
 
 To carry out all the objectives for this repo, the following necessary dependencies were loaded:
-+ `Pandas 2.2.2` and `Numpy 1.26`
-+ `Matplotlib 3.8.4`
-+ `Seaborn 0.12.2`
-+ `Nltk 3.8.1`
-+ `IPython 8.20.0`
-+ `IPython Sql 0.3.9`
-+ `Python 3.11.8`
-+ `Pymysql 1.0.2`
-+ `ML Flow 2.14.1`
+
+### Streamlit app dependencies:
+- `streamlit` - For building the interactive web application.
+- `pickle-mixin` - For working with pickled objects.
+- `bcrypt` - For securely handling password encryption and authentication.
+- `os-sys` - Provides access to miscellaneous operating system interfaces.
+
+### Notebook dependencies:
+- `pandas` - For data manipulation and analysis.
+- `numpy` - For numerical computations.
+- `matplotlib` - For data visualization and plotting.
+- `seaborn` - For statistical data visualization.
+- `plotly` - For interactive plots and data visualizations.
+- `scikit-learn` - For machine learning algorithms and model evaluation.
+- `xgboost` - For gradient boosting-based machine learning models.
+- `joblib` - For saving and loading models.
+- `statsmodels` - For statistical analysis and modeling.
+- `mlflow` - For tracking experiments and managing machine learning models.
+
+### Python environment:
+- `Python 3.11.8` - The Python version used in this environment.
 
 ## 4. Environment <a class="anchor" id="environment"></a>
 
-Use the Anaconda programme to create the environment. Click on the plus icon at the bottom of the Anaconda environments pane. Select All on the drop down menu to select the packages needed to run this report.Select the following packages one by one from the drop down menu: numpy version 1.20.4, pandas version 2.2.2, seaborn version 0.13.2 & matplotlib version 3.8.4,nltk version 3.8.1,ipython version 8.20.0,ipython sql version 0.3.9, python version 3.11.8,pymysql version 1.0.2 & ML Flow version 2.14.1. After selecting the tick boxes - click on apply. Then right click on the play button and scroll down to open in Jupyter notebook to install this report.
+Use the Anaconda programme to create the environment. Click on the plus icon at the bottom of the Anaconda environments pane. Select All on the drop down menu to select the packages needed to run this report. After selecting the tick boxes - click on apply. Then right click on the play button and scroll down to open in Jupyter notebook to install this report.
 
 ### Create the new evironment - you only need to do this once
 
@@ -117,7 +129,7 @@ As a first step to becoming familiar with our web app's functioning, we recommen
 - Navigate to the base of your repo where your base_app.py is stored, and start the Streamlit app.
 
  ```bash
- cd Heckathon/Streamlit/
+ cd Women_and_girl-s_safety/Streamlit/
  streamlit run base_app.py
  ```
 
@@ -132,7 +144,7 @@ As a first step to becoming familiar with our web app's functioning, we recommen
 You should also be automatically directed to the base page of your web app. This should look something like:
 
 <div id="s_image" align="center">
-  <img src="Screenshot (346).png" width="850" height="400" alt=""/>
+  <img src="App_picture.png" width="850" height="400" alt=""/>
 </div>
 
 Congratulations! You've now officially deployed your first web application!

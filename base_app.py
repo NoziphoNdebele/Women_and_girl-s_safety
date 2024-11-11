@@ -78,7 +78,7 @@ st.markdown(
     <style>
     /* Set the background color on the main app container */
     .stApp {
-        background-color: #ECECEC; /* Darker grey */
+        background-color: #DEDEDE; /* Darker grey */
     }
 
     /* Lighter overlay for readability */

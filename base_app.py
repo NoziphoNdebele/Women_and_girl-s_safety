@@ -69,9 +69,21 @@ def logout_user():
     st.session_state["user_email"] = None
 
 
+# Check for logout and rerun only if logged in
+if (
+    st.sidebar.button("Logout", key="logout_button")
+    and st.session_state["authenticated"]
+):
+    logout_user()
+    try:
+        st.experimental_rerun()
+    except:
+        pass  # Prevents rerun error from interrupting the app
+
 # Check authentication state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
+
 
 # Sidebar for navigation and authentication
 st.sidebar.title("Navigation")

@@ -54,7 +54,7 @@ def register_user(email, password):
     return "Registration successful! Please log in."
 
 
-# Remove any st.experimental_rerun() from inside these functions
+# Login function
 def login_user(email, password):
     if email in user_data and check_password(password, user_data[email]):
         st.session_state["authenticated"] = True
@@ -63,6 +63,7 @@ def login_user(email, password):
     return "Invalid email or password."
 
 
+# Logout function
 def logout_user():
     st.session_state["authenticated"] = False
     st.session_state["user_email"] = None
@@ -71,6 +72,53 @@ def logout_user():
 # Check authentication state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
+
+# Sidebar for navigation and authentication
+st.sidebar.title("Navigation")
+page = st.sidebar.selectbox(
+    "Go to",
+    [
+        "Overview",
+        "Dataset Description",
+        "EDA",
+        "Model Prediction",
+        "Model Evaluation",
+        "Team",
+        "Contact",
+    ],
+)
+
+# Login and Registration in Sidebar
+if not st.session_state["authenticated"]:
+    st.sidebar.subheader("Register or Sign In")
+
+    # Registration block
+    with st.sidebar.expander("Register"):
+        email = st.text_input("Email", key="register_email")
+        password = st.text_input("Password", type="password", key="register_password")
+        if st.button("Register", key="register_button"):
+            reg_msg = register_user(email, password)
+            if "successful" in reg_msg:
+                st.sidebar.success(reg_msg)
+            else:
+                st.sidebar.error(reg_msg)
+
+    # Login block
+    with st.sidebar.expander("Sign In"):
+        email = st.text_input("Email", key="login_email")
+        password = st.text_input("Password", type="password", key="login_password")
+        if st.button("Sign In", key="login_button"):
+            login_msg = login_user(email, password)
+            if "successful" in login_msg:
+                st.sidebar.success(login_msg)
+            else:
+                st.sidebar.error(login_msg)
+else:
+    # Logged-in user display and logout option
+    st.sidebar.write(f"Welcome, {st.session_state['user_email']}!")
+    if st.sidebar.button("Logout"):
+        logout_user()
+        st.experimental_rerun()
 
 st.markdown(
     """
@@ -123,57 +171,6 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-
-
-# Sidebar for navigation and authentication
-st.sidebar.title("Navigation")
-page = st.sidebar.selectbox(
-    "Go to",
-    [
-        "Overview",
-        "Dataset Description",
-        "EDA",
-        "Model Prediction",
-        "Model Evaluation",
-        "Team",
-        "Contact",
-    ],
-)
-
-# Login and Registration in Sidebar
-if not st.session_state["authenticated"]:
-    st.sidebar.subheader("Register or Sign In")
-
-    # Registration block
-    with st.sidebar.expander("Register"):
-        email = st.text_input("Email", key="register_email")
-        password = st.text_input("Password", type="password", key="register_password")
-        if st.button("Register", key="register_button"):
-            reg_msg = register_user(email, password)
-            if "successful" in reg_msg:
-                st.sidebar.success(reg_msg)
-            else:
-                st.sidebar.error(reg_msg)
-
-    # Login block
-    with st.sidebar.expander("Sign In"):
-        email = st.text_input("Email", key="login_email")
-        password = st.text_input("Password", type="password", key="login_password")
-        if st.button("Sign In", key="login_button"):
-            login_msg = login_user(email, password)
-            if "successful" in login_msg:
-                # Update session state and trigger rerun only if login is successful
-                st.session_state["authenticated"] = True
-                st.session_state["user_email"] = email
-                st.experimental_rerun()  # Triggers rerun on successful login
-            else:
-                st.sidebar.error(login_msg)
-else:
-    # Logged-in user display and logout option
-    st.sidebar.write(f"Welcome, {st.session_state['user_email']}!")
-    if st.sidebar.button("Logout"):
-        logout_user()
-        st.experimental_rerun()  # Triggers rerun on logout to reset the interface
 
 # Content based on sidebar selection
 if page == "Overview":

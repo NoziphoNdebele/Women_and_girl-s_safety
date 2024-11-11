@@ -6,14 +6,14 @@ import os
 
 
 # File to store user data
-USER_DATA_FILE = "models\user_data.pkl"
+USER_DATA_FILE = "models/user_data.pkl"
 
 # Load pre-trained models
-with open("models\Random Forest_model.pkl", "rb") as rf_model_file:
+with open("models/Random Forest_model.pkl", "rb") as rf_model_file:
     random_forest = pickle.load(rf_model_file)
-with open("models\XGBoost_model.pkl", "rb") as xgb_model_file:
+with open("models/XGBoost_model.pkl", "rb") as xgb_model_file:
     xgboost = pickle.load(xgb_model_file)
-with open("models\Gradient Boosting_model.pkl", "rb") as gb_model_file:
+with open("models/Gradient Boosting_model.pkl", "rb") as gb_model_file:
     gradient_boosting = pickle.load(gb_model_file)
 
 # Model selection dictionary
@@ -262,22 +262,22 @@ elif page == "EDA":
     )
 
     # Insert EDA1 image (e.g., distribution of age or income)
-    st.image("Images\EDA3.png", caption="Distribution of Age Groups or Income Levels")
+    st.image("Images/EDA3.png", caption="Distribution of Age Groups or Income Levels")
 
     # Insert EDA2 image (e.g., correlation between socio-economic factors and domestic violence)
     st.image(
-        "Images\EDA1.png",
+        "Images/EDA1.png",
         caption="Correlation Between Socio-Economic Factors and Domestic Violence Risk",
     )
 
     # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
     st.image(
-        "Images\EDA2.png", caption="Impact of Marital Status on Domestic Violence Risk"
+        "Images/EDA2.png", caption="Impact of Marital Status on Domestic Violence Risk"
     )
 
     # Insert the new EDA3 image (e.g., effect of marital status on violence risk)
     st.image(
-        "Images\EDA4.png", caption="Impact of Marital Status on Domestic Violence Risk"
+        "Images/EDA4.png", caption="Impact of Marital Status on Domestic Violence Risk"
     )
 
     # Additional EDA Insights (if applicable)
@@ -394,7 +394,7 @@ elif page == "Model Evaluation":
 
     # Insert EDA5 image for model evaluation (e.g., confusion matrix or ROC curve)
     st.image(
-        "Images\EDA5.png", caption="Model Evaluation - Confusion Matrix or ROC Curve"
+        "Images/EDA5.png", caption="Model Evaluation - Confusion Matrix or ROC Curve"
     )
 
     # Additional explanation (if applicable)

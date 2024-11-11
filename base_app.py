@@ -66,7 +66,6 @@ def logout_user():
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
-# Apply CSS to set the background image
 st.markdown("""
     <style>
     /* Set the background image on the main app container */
@@ -78,18 +77,18 @@ st.markdown("""
         background-attachment: fixed;
     }
 
-    /* Overlay for readability */
+    /* Lighter overlay for readability */
     .main {
-        background-color: rgba(51, 51, 51, 0.8); /* Dark overlay */
+        background-color: rgba(255, 255, 255, 0.8); /* Light overlay */
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        color: #FFFFFF;
+        color: #333333; /* Darker text for contrast */
     }
 
     /* Set font colors */
     h1, h2, h3, h4, h5, h6 { color: #FF66B2; font-family: Arial, sans-serif; }
-    label { color: #FFFFFF !important; }
+    label { color: #333333 !important; }
 
     /* Button styling */
     .stButton button {
@@ -119,6 +118,7 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 # Sidebar for navigation and authentication
 st.sidebar.title("Navigation")

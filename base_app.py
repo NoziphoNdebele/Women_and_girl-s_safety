@@ -6,7 +6,7 @@ import os
 
 
 # File to store user data
-USER_DATA_FILE = "user_data.pkl"
+USER_DATA_FILE = "models\user_data.pkl"
 
 # Load pre-trained models
 with open("models\Random Forest_model.pkl", "rb") as rf_model_file:

@@ -128,10 +128,7 @@ if not st.session_state["authenticated"]:
 else:
     # Logged-in user display and logout option
     st.sidebar.write(f"Welcome, {st.session_state['user_email']}!")
-    if st.sidebar.button("Logout"):
-        logout_user()
-        st.experimental_rerun()
-
+    
 st.markdown(
     """
     <style>

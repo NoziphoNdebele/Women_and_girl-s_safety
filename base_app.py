@@ -415,7 +415,7 @@ elif page == "Team":
     st.subheader("Nozipho Sithembiso Ndebele")
     st.write(
         """
-        **Role**: Data Scientist   
+        **Role**: Data Science Student   
         **Contributions**: Nozipho designed, developed, and implemented the Domestic Violence Risk Prediction 
         and Recommendation App. Her responsibilities included data analysis, model development, and building the 
         application interface. Nozipho’s commitment to addressing social issues through data-driven solutions 

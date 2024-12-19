@@ -132,32 +132,45 @@ else:
 st.markdown(
     """
     <style>
-    /* Set the background color on the main app container */
+    /* Main app container */
     .stApp {
         background-color: #DEDEDE; /* Darker grey */
     }
 
-    /* Lighter overlay for readability */
+    /* Overlay for better readability */
     .main {
-        background-color: rgba(255, 255, 255, 0.8); /* Light overlay */
+        background-color: rgba(255, 255, 255, 0.9); /* Slightly opaque white */
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        color: #333333; /* Darker text for contrast */
+        color: #333333; /* Darker text */
     }
 
-    /* Set font colors */
-    h1, h2, h3, h4, h5, h6 { color: #FF66B2; font-family: Arial, sans-serif; }
-    label { color: #333333 !important; }
+    /* Set font colors and styles */
+    body, .stText {
+        color: #333333; /* Default text color */
+        font-family: Arial, sans-serif;
+    }
 
-    /* Button styling */
+    h1, h2, h3, h4, h5, h6 {
+        color: #FF66B2; /* Pink for headings */
+        font-family: 'Helvetica', sans-serif;
+    }
+
+    label {
+        color: #333333 !important; /* Label text color */
+    }
+
+    /* Buttons styling */
     .stButton button {
         background-color: #FF66B2;
         color: white;
-        border: None;
+        border: none;
         border-radius: 5px;
         padding: 10px 20px;
+        font-weight: bold;
     }
+
     .stButton button:hover {
         background-color: #D147A3;
         color: white;
@@ -166,7 +179,7 @@ st.markdown(
     /* Sidebar styling */
     section[data-testid="stSidebar"] {
         background-color: #FF66B2;
-        color: #333333;
+        color: white;
     }
     section[data-testid="stSidebar"] h1, 
     section[data-testid="stSidebar"] h2, 
@@ -174,12 +187,13 @@ st.markdown(
     section[data-testid="stSidebar"] h4, 
     section[data-testid="stSidebar"] h5, 
     section[data-testid="stSidebar"] h6 {
-        color: #FFFFFF !important;
+        color: white !important; /* Ensure sidebar headings are white */
     }
     </style>
-""",
+    """,
     unsafe_allow_html=True,
 )
+
 
 # Content based on sidebar selection
 if page == "Overview":

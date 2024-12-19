@@ -132,53 +132,48 @@ else:
 st.markdown(
     """
     <style>
-    /* Main app container */
+    /* General app styling */
     .stApp {
-        background-color: #DEDEDE; /* Darker grey */
+        background-color: #DEDEDE; /* Light grey background */
     }
 
-    /* Overlay for better readability */
+    /* Main content area */
     .main {
-        background-color: rgba(255, 255, 255, 0.9); /* Slightly opaque white */
+        background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        color: #333333; /* Darker text */
+        color: #333333; /* Default text color */
     }
 
-    /* Set font colors and styles */
-    body, .stText {
-        color: #333333; /* Default text color */
+    /* Heading styling (pink color) */
+    h1, h2, h3, h4, h5, h6 {
+        color: #FF66B2; /* Bright pink */
         font-family: Arial, sans-serif;
     }
 
-    h1, h2, h3, h4, h5, h6 {
-        color: #FF66B2; /* Pink for headings */
-        font-family: 'Helvetica', sans-serif;
-    }
-
+    /* Label text */
     label {
-        color: #333333 !important; /* Label text color */
+        color: #333333 !important; /* Ensure form labels are readable */
     }
 
-    /* Buttons styling */
+    /* Button styling */
     .stButton button {
-        background-color: #FF66B2;
-        color: white;
+        background-color: #FF66B2; /* Bright pink background */
+        color: white; /* White text */
         border: none;
         border-radius: 5px;
         padding: 10px 20px;
-        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
     }
-
     .stButton button:hover {
-        background-color: #D147A3;
-        color: white;
+        background-color: #D147A3; /* Darker pink on hover */
     }
 
     /* Sidebar styling */
     section[data-testid="stSidebar"] {
-        background-color: #FF66B2;
+        background-color: #FF66B2; /* Bright pink sidebar */
         color: white;
     }
     section[data-testid="stSidebar"] h1, 
@@ -187,7 +182,12 @@ st.markdown(
     section[data-testid="stSidebar"] h4, 
     section[data-testid="stSidebar"] h5, 
     section[data-testid="stSidebar"] h6 {
-        color: white !important; /* Ensure sidebar headings are white */
+        color: #FFFFFF !important; /* Ensure white text for sidebar headings */
+    }
+
+    /* Text color consistency across the app */
+    p, span, div, a {
+        color: #333333; /* Standard dark grey text */
     }
     </style>
     """,
